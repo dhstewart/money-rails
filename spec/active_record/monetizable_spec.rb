@@ -839,6 +839,20 @@ if defined? ActiveRecord
 
           expect(product.read_monetized(:reduced_price, :reduced_price_cents)).not_to eq(reduced_price)
         end
+
+        it "calculates correctly if the amount does not change but currency does" do
+          test_product = Product.create(reduced_price_currency: 'EUR', reduced_price_cents: 10000)
+          new_cents = 10000
+          test_product.update(reduced_price_currency: 'BTC', reduced_price_cents: new_cents)
+          expect(test_product.reduced_price_cents).to eq(new_cents)
+        end
+
+        it "calculates correctly if the amount and currency both change" do
+          test_product = Product.create(reduced_price_currency: 'EUR', reduced_price_cents: 10000)
+          new_cents = 10001
+          test_product.update(reduced_price_currency: 'BTC', reduced_price_cents: new_cents)
+          expect(test_product.reduced_price_cents).to eq(new_cents)
+        end
       end
 
       context "with preserve_user_input set" do
